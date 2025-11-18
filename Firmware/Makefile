@@ -1,0 +1,26 @@
+##-- Riscv toolchain path
+## put next line (SHELL...) in windows to not produce exceptions during compilation
+SHELL = C:/Windows/System32/cmd.exe
+RISCV = ..\..\tools\xpack-risc_v\bin\riscv-none-elf
+prog: code.bin
+code.elf: sections.lds start.s main.c printf.c Makefile
+# in next line, write -march=rv32e (if embeded) or -march=rv32em (if embedded and mult y div)
+	$(RISCV)-gcc -march=rv32em -mabi=ilp32e -misa-spec=2.2 \
+	-Wl,-Bstatic,-T,sections.lds,--strip-debug,-Map=code.map \
+	-ffreestanding -nostdlib \
+	-Os -o $@ start.s main.c -lgcc
+	$(RISCV)-objdump -d $@ >code.lst
+	$(RISCV)-size $@
+
+code.bin: code.elf
+	$(RISCV)-objcopy -O binary $< $@
+	
+dis: code.elf
+	$(RISCV)-objdump -d $< >code.lst
+
+# ---- Clean ----
+
+clean:
+	rm -f *.elf *.bin *~ *.lst *.map
+
+.PHONY: prog

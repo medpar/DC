@@ -1,0 +1,107 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RONLY            0x0000000000000000 0x0000000000001c00 xr
+RAM              0x0000000000001c00 0x0000000000000400 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+
+.text           0x0000000000000000     0x17f0
+                0x0000000000000000                . = ALIGN (0x4)
+ *(.boot)
+ .boot          0x0000000000000000        0x4 /tmp/cceOowHF.o
+ *(.text)
+ .text          0x0000000000000004       0x68 /tmp/cceOowHF.o
+                0x0000000000000060                delay_loop
+ .text          0x000000000000006c      0xc0c /tmp/ccNWx4Ud.o
+                0x000000000000006c                irq2_handler
+                0x00000000000000d4                irq3_handler
+                0x000000000000012c                _putch
+                0x00000000000005c0                _puts
+                0x00000000000005f4                _printf
+                0x0000000000000630                _sprintf
+                0x0000000000000668                _getch
+                0x00000000000006b8                haschar
+                0x00000000000006d4                getMEPC
+                0x00000000000006e0                irq1_handler
+                0x0000000000000770                spixfer
+                0x0000000000000790                getw
+                0x00000000000007e4                _memcpy
+                0x000000000000080c                fix_mpy
+                0x0000000000000820                fix_fft
+                0x0000000000000b70                _rand
+                0x0000000000000ba0                tv
+ *(.text*)
+ .text.startup  0x0000000000000c78      0x160 /tmp/ccNWx4Ud.o
+                0x0000000000000c78                main
+ *(.rodata)
+ .rodata        0x0000000000000dd8      0x800 /tmp/ccNWx4Ud.o
+                0x0000000000000dd8                Sinewave
+ *(.rodata*)
+ .rodata.str1.4
+                0x00000000000015d8      0x218 /tmp/ccNWx4Ud.o
+ *(.srodata)
+ *(.srodata*)
+                0x00000000000017f0                _etext = .
+                0x00000000000017f0                _sidata = _etext
+
+.rela.dyn       0x00000000000017f0        0x0
+ .rela.text     0x00000000000017f0        0x0 /tmp/cceOowHF.o
+
+.data           0x0000000000001c00        0x8 load address 0x00000000000017f0
+                0x0000000000001c00                . = ALIGN (0x4)
+                0x00000000000017f0                _sdata_values = LOADADDR (.data)
+                0x0000000000001c00                _sdata = .
+                0x0000000000001c00                _ram_start = .
+                0x0000000000001c00                . = ALIGN (0x4)
+ *(.data)
+ .data          0x0000000000001c00        0x0 /tmp/cceOowHF.o
+ .data          0x0000000000001c00        0x0 /tmp/ccNWx4Ud.o
+ *(.data*)
+ *(.sdata)
+ .sdata         0x0000000000001c00        0x8 /tmp/ccNWx4Ud.o
+ *(.sdata*)
+                0x0000000000001c08                . = ALIGN (0x4)
+                0x0000000000001c08                _edata = .
+
+.bss            0x0000000000001c08       0x2c load address 0x00000000000017f8
+                0x0000000000001c08                . = ALIGN (0x4)
+                0x0000000000001c08                _sbss = .
+ *(.bss)
+ .bss           0x0000000000001c08        0x0 /tmp/cceOowHF.o
+ .bss           0x0000000000001c08       0x20 /tmp/ccNWx4Ud.o
+                0x0000000000001c08                udat
+ *(.bss*)
+ *(.sbss)
+ .sbss          0x0000000000001c28        0xa /tmp/ccNWx4Ud.o
+                0x0000000000001c28                nadd
+                0x0000000000001c2c                nmul
+                0x0000000000001c30                wrix
+                0x0000000000001c31                rdix
+ *(.sbss*)
+ *(COMMON)
+                0x0000000000001c34                . = ALIGN (0x4)
+ *fill*         0x0000000000001c32        0x2 
+                0x0000000000001c34                _ebss = .
+
+.heap           0x0000000000001c34        0x0 load address 0x00000000000017f8
+                0x0000000000001c34                . = ALIGN (0x4)
+                0x0000000000001c34                _heap_start = .
+LOAD /tmp/cceOowHF.o
+LOAD /tmp/ccNWx4Ud.o
+LOAD /usr/lib/gcc/riscv64-unknown-elf/10.2.0/rv32em/ilp32e/libgcc.a
+OUTPUT(code.elf elf32-littleriscv)
+
+.riscv.attributes
+                0x0000000000000000       0x25
+ .riscv.attributes
+                0x0000000000000000       0x1f /tmp/cceOowHF.o
+ .riscv.attributes
+                0x000000000000001f       0x25 /tmp/ccNWx4Ud.o
+
+.comment        0x0000000000000000        0xf
+ .comment       0x0000000000000000        0xf /tmp/ccNWx4Ud.o
+                                         0x10 (size before relaxing)

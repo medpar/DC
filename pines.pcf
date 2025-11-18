@@ -1,0 +1,25 @@
+# Master clock (12MHz)
+
+set_io CLKIN 21
+
+# UART. TXD out, RXD in
+
+set_io TXD 8
+set_io RXD 9
+
+
+# Input & Output registers
+
+set_io PINOUT[0] 136	# LED
+set_io PINOUT[1] 137	# LED
+set_io PINOUT[2] 138	# LED
+set_io PINOUT[3] 139	# LED
+
+#SPI
+
+set_io FSS  71	# /CS for SPI flash
+set_io SCK  70 # SCK
+set_io MOSI 67 # MOSI
+set_io MISO 68 # MISO
+
+

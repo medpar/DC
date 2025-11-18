@@ -1,0 +1,51 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Wed Nov 05 19:25:01 2025
+[*]
+[dumpfile] "C:\TP1_RV32E\laRVa2_DC\tb.vcd"
+[dumpfile_mtime] "Wed Nov 05 19:23:13 2025"
+[dumpfile_size] 2896198
+[savefile] "C:\TP1_RV32E\laRVa2_DC\tb.gtkw"
+[timestart] 0
+[size] 1641 747
+[pos] 1982 -23
+*-12.160854 527 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb.
+[treeopen] tb.sys1.
+[treeopen] tb.sys1.cpu.
+[sst_width] 211
+[signals_width] 267
+[sst_expanded] 1
+[sst_vpaned_height] 194
+@28
+tb.sys1.cclk
+@22
+tb.sys1.cpu.IR[31:0]
+@28
+tb.sys1.cpu.opvalid
+@22
+tb.sys1.cpu.opcode[6:0]
+tb.sys1.cpu.rs1[4:0]
+tb.sys1.cpu.rs2[4:0]
+tb.sys1.cpu.rd[4:0]
+@28
+tb.sys1.rxd
+@22
+tb.sys1.uart0.rbr[7:0]
+tb.sys1.uart0.thr[7:0]
+@28
+tb.sys1.txd
+tb.sys1.uart0.tend
+tb.sys1.irq
+tb.sys1.cpu.irqstart
+tb.sys1.cpu.mret
+tb.sys1.cpu.mmode
+tb.sys1.cpu.trap
+tb.sys1.cpu.csrrw_mepc
+@22
+tb.sys1.cpu.regsQ1[31:0]
+tb.sys1.cpu.regsQ2[31:0]
+@420
+tb.sys1.cpu.regsD[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
