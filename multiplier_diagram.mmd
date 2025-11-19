@@ -1,0 +1,53 @@
+```mermaid
+graph LR
+    clk((clk))
+    reset((reset))
+    a["A – rs2 (32 bits)"]
+    b["B – rs1 (32 bits)"]
+    ua["ua (1)"]
+    ub["ub (1)"]
+    hm["hm (1)"]
+    load["load (1)"]
+
+    fastdet["Detector casos rápidos\n(0, ±1, potencias de 2)"]
+    fastReg["fast_product_r\n64 bits"]
+    muxFast{{"fast_active ?"}}
+    md["MD – shift register\n64 bits"]
+    mr["MR – shift register\n32 bits"]
+    adder["Adder"]
+    acc["ACC – acumulador\n64 bits"]
+    busy["busy / mbusy"]
+    out["out[31:0] / out[63:32]"]
+
+    clk --> md
+    clk --> mr
+    clk --> acc
+    reset --> md
+    reset --> mr
+    reset --> acc
+
+    a --> fastdet
+    b --> fastdet
+    ua --> fastdet
+    ub --> fastdet
+
+    fastdet -->|caso rápido| fastReg
+    fastReg --> muxFast
+
+    b --> md
+    md --> adder
+    acc --> adder
+    adder --> acc
+
+    a --> mr
+    mr --> busy
+    busy --> muxFast
+
+    load --> md
+    load --> mr
+    fastdet -. inhibe load secuencial .-> md
+    fastdet -. inhibe load secuencial .-> mr
+
+    hm --> muxFast
+    muxFast --> out
+```
