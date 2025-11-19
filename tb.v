@@ -27,11 +27,6 @@ initial begin
 	//-- Fichero donde almacenar los resultados
 	$dumpfile("tb.vcd");
 	$dumpvars(0, tb);
-		$dumpvars(0, tb.sys1.cpu.regs[11]);		
-		$dumpvars(0, tb.sys1.cpu.regs[12]);		
-		$dumpvars(0, tb.sys1.cpu.regs[13]);		
-		$dumpvars(0, tb.sys1.cpu.regs[14]);		
-		$dumpvars(0, tb.sys1.cpu.regs[15]);		
 
 	resetb = 0; clk=0; rxd=1;
 
@@ -58,5 +53,3 @@ end
 
 
 endmodule
-
-
