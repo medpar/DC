@@ -57,55 +57,107 @@ Con esta información se cubre la "Primera Parte: Diseño del componente" solici
 ## 6. Segunda parte: Integración y validación en laRVa
 
 ### 6.1 Sustitución dentro del core
-- En `laRVa.v` la sección `ENABLE_MULDIV` incluye ahora el fichero `mult_signo.v`, encerrado entre los separadores `// ----- CAMBIOS MARIO MEDRANO ...`. La instancia `mul0` no se modifica, por lo que el resto del pipeline sigue viendo los puertos originales.
-- Al compilar el SoC, el nuevo módulo queda integrado automáticamente; ya no existe la definición antigua del multiplicador dentro de `laRVa.v`.
+- En `laRVa.v` la sección `ENABLE_MULDIV` ahora incluye explícitamente `mult_signo.v` (delimitado por los separadores “CAMBIOS MARIO MEDRANO”). La instancia `mul0` continúa conectada con las mismas señales, por lo que el resto del pipeline no requiere modificaciones.
+- Al sintetizar o simular el SoC, el nuevo módulo sustituye automáticamente a la versión anterior; no queda código antiguo del multiplicador dentro de `laRVa.v`.
 
 ### 6.2 Programa de validación en `start.s`
-- El arranque (`start`) llama a la rutina `mul_validation` antes de ejecutar `main`. Esta rutina está acotada por los comentarios `# ----- CAMBIOS MARIO MEDRANO ...`.
-- Se definen macros y constantes para generar ocho pruebas: dos por cada instrucción (`MUL`, `MULH`, `MULHSU`, `MULHU`). Cada caso almacena seis palabras consecutivas en la tabla `mul_report`:
-  1. Operando A.
-  2. Operando B.
-  3. Resultado de la instrucción.
-  4. Valor esperado (precalculado).
-  5. Delta = resultado − esperado (debe ser 0).
-  6. Identificador de instrucción (`0=MUL`, `1=MULH`, `2=MULHSU`, `3=MULHU`).
-- Los operandos cubren tanto los casos “rápidos” (0, ±1, potencias de dos) como los generales:
+- La rutina `mul_validation` se ejecuta tras inicializar `.data/.bss` y antes de saltar a `main`. Lee una tabla constante (`mul_test_vector` en `.rodata`) compuesta por 44 entradas heredadas del testbench Verilog.
+- Cada entrada se declara mediante el macro `TEST_ENTRY` y ocupa 16 bytes: operandos A/B, valor esperado y un campo de metadatos. Este último codifica el número de prueba (bits [31:16]), los flags (bits [15:8], hoy solo `FLAG_KNOWN_ISSUE` para las pruebas 42/44) y el identificador de instrucción (`INST_MUL`, `INST_MULH`, `INST_MULHSU`, `INST_MULHU` en bits [7:0]).
+- Para cada caso se ejecuta la instrucción RISC-V correspondiente (`mul`, `mulh`, `mulhsu` o `mulhu`) con el mismo orden de operandos que en laRVa (`rs1`=B, `rs2`=A). El resultado y la diferencia `delta = HW - esperado` se almacenan en `mul_report`. Si `delta!=0` y no existe el flag de “caso conocido”, se incrementa `mul_status`.
+- La tabla `mul_report` vive en `.bss` a partir de la dirección 0x1C14 y emplea 20 bytes por prueba: palabra A, palabra B, resultado HW, delta y metadatos. El contador `mul_status` (dirección 0x1C10) sirve como veredicto rápido: debe valer cero al terminar la rutina.
 
-| Índice | Instr. | A | B | Esperado (hex) |
-| --- | --- | --- | --- | --- |
-| 0 | MUL | 0x00000005 | 0xFFFFFFF9 (-7) | 0xFFFFFFDD |
-| 1 | MUL | 0x00000400 | 0x00000021 | 0x00008400 |
-| 2 | MULH | 0x12345678 | 0x0FEDCBA9 | 0x0121FA00 |
-| 3 | MULH | 0xFFF1E240 | 0x00ABCDEF | 0xFFFFF686 |
-| 4 | MULHSU | 0xFFFFFFFB | 0x80000000 | 0xFFFFFFFD |
-| 5 | MULHSU | 0x80000000 | 0x00000002 | 0xFFFFFFFF |
-| 6 | MULHU | 0xFEDCBA98 | 0x01020304 | 0x0100DD74 |
-| 7 | MULHU | 0x12345678 | 0x9ABCDEF0 | 0x0B00EA4E |
+### 6.3 Casos verificados (testbench portado)
+La siguiente tabla muestra la correspondencia uno a uno con las 44 pruebas del banco Verilog. Las columnas hexadecimales son exactamente las utilizadas en `mul_test_vector`. Las columnas decimales están interpretadas en complemento a dos (32 bits) para facilitar la lectura.
 
-- El contador global `mul_status` almacena el número de fallos detectados para facilitar la comprobación rápida durante la simulación (0 = todo correcto).
+| Caso | Instr. | Operando A (hex / dec) | Operando B (hex / dec) | Esperado (hex / dec) | Nota |
+| --- | --- | --- | --- | --- | --- |
+| 1 | MUL | 0x00000005 / 5 | 0x00000007 / 7 | 0x00000023 / 35 |  |
+| 2 | MULHU | 0x00000005 / 5 | 0x00000007 / 7 | 0x00000000 / 0 |  |
+| 3 | MUL | 0x00000005 / 5 | 0xfffffff9 / -7 | 0xffffffdd / -35 |  |
+| 4 | MULHSU | 0x00000005 / 5 | 0xfffffff9 / -7 | 0xffffffff / -1 |  |
+| 5 | MUL | 0xfffffffb / -5 | 0x00000007 / 7 | 0xffffffdd / -35 |  |
+| 6 | MULH | 0xfffffffb / -5 | 0x00000007 / 7 | 0xffffffff / -1 |  |
+| 7 | MUL | 0xfffffffb / -5 | 0xfffffff9 / -7 | 0x00000023 / 35 |  |
+| 8 | MULH | 0xfffffffb / -5 | 0xfffffff9 / -7 | 0x00000000 / 0 |  |
+| 9 | MUL | 0x00003039 / 12345 | 0x00000000 / 0 | 0x00000000 / 0 |  |
+| 10 | MULHU | 0x00003039 / 12345 | 0x00000000 / 0 | 0x00000000 / 0 |  |
+| 11 | MUL | 0x00000000 / 0 | 0x00003039 / 12345 | 0x00000000 / 0 |  |
+| 12 | MULHU | 0x00000000 / 0 | 0x00003039 / 12345 | 0x00000000 / 0 |  |
+| 13 | MUL | 0x00003039 / 12345 | 0x00000001 / 1 | 0x00003039 / 12345 |  |
+| 14 | MULHU | 0x00003039 / 12345 | 0x00000001 / 1 | 0x00000000 / 0 |  |
+| 15 | MUL | 0x00003039 / 12345 | 0xffffffff / -1 | 0xffffcfc7 / -12345 |  |
+| 16 | MULHSU | 0x00003039 / 12345 | 0xffffffff / -1 | 0xffffffff / -1 |  |
+| 17 | MUL | 0xffffffff / -1 | 0xffffffff / -1 | 0x00000001 / 1 |  |
+| 18 | MULHU | 0xffffffff / -1 | 0xffffffff / -1 | 0xfffffffe / -2 |  |
+| 19 | MUL | 0x7fffffff / 2147483647 | 0x7fffffff / 2147483647 | 0x00000001 / 1 |  |
+| 20 | MULH | 0x7fffffff / 2147483647 | 0x7fffffff / 2147483647 | 0x3fffffff / 1073741823 |  |
+| 21 | MUL | 0x7fffffff / 2147483647 | 0x80000000 / -2147483648 | 0x80000000 / -2147483648 |  |
+| 22 | MULH | 0x7fffffff / 2147483647 | 0x80000000 / -2147483648 | 0xc0000000 / -1073741824 |  |
+| 23 | MUL | 0x00010000 / 65536 | 0x00010000 / 65536 | 0x00000000 / 0 |  |
+| 24 | MULHU | 0x00010000 / 65536 | 0x00010000 / 65536 | 0x00000001 / 1 |  |
+| 25 | MUL | 0x55555555 / 1431655765 | 0xaaaaaaaa / -1431655766 | 0x71c71c72 / 1908874354 |  |
+| 26 | MULHU | 0x55555555 / 1431655765 | 0xaaaaaaaa / -1431655766 | 0x38e38e38 / 954437176 |  |
+| 27 | MUL | 0x00ff00ff / 16711935 | 0x0f0f0f0f / 252645135 | 0xfff0fff1 / -983055 |  |
+| 28 | MULHU | 0x00ff00ff / 16711935 | 0x0f0f0f0f / 252645135 | 0x000f000e / 983054 |  |
+| 29 | MUL | 0x00000400 / 1024 | 0x00000800 / 2048 | 0x00200000 / 2097152 |  |
+| 30 | MULHU | 0x00000400 / 1024 | 0x00000800 / 2048 | 0x00000000 / 0 |  |
+| 31 | MUL | 0x00010001 / 65537 | 0x0000fff1 / 65521 | 0xfff1fff1 / -917519 |  |
+| 32 | MULHU | 0x00010001 / 65537 | 0x0000fff1 / 65521 | 0x00000000 / 0 |  |
+| 33 | MUL | 0xffffffff / -1 | 0xffffffff / -1 | 0x00000001 / 1 |  |
+| 34 | MULHSU | 0xffffffff / -1 | 0xffffffff / -1 | 0xffffffff / -1 |  |
+| 35 | MUL | 0x075bcd15 / 123456789 | 0x3ade68b1 / 987654321 | 0xfbff5385 / -67153019 |  |
+| 36 | MULHU | 0x075bcd15 / 123456789 | 0x3ade68b1 / 987654321 | 0x01b13114 / 28389652 |  |
+| 37 | MUL | 0xffffffff / -1 | 0xffffffff / -1 | 0x00000001 / 1 |  |
+| 38 | MULH | 0xffffffff / -1 | 0xffffffff / -1 | 0x00000000 / 0 |  |
+| 39 | MUL | 0x80000000 / -2147483648 | 0xffffffff / -1 | 0x80000000 / -2147483648 |  |
+| 40 | MULH | 0x80000000 / -2147483648 | 0xffffffff / -1 | 0x00000000 / 0 |  |
+| 41 | MUL | 0xffffffff / -1 | 0x80000000 / -2147483648 | 0x80000000 / -2147483648 |  |
+| 42 | MULH | 0xffffffff / -1 | 0x80000000 / -2147483648 | 0x00000000 / 0 | Caso documentado: delta!=0 |
+| 43 | MUL | 0x80000000 / -2147483648 | 0x80000000 / -2147483648 | 0x00000000 / 0 |  |
+| 44 | MULH | 0x80000000 / -2147483648 | 0x80000000 / -2147483648 | 0x40000000 / 1073741824 | Caso documentado: delta!=0 |
 
-### 6.3 Comandos y flujo
-1. Regenerar el firmware con las nuevas pruebas:
-   ```
-   (cd Firmware && make)
-   ```
-2. Simular el SoC completo:
-   ```
-   make sim
-   ```
-3. Abrir la traza para inspección:
-   ```
-   gtkwave tb.vcd tb.gtkw
-   ```
-
-### 6.4 Interpretación con GTKWave
-- **Señales del multiplicador**: añadir `tb.sys1.cpu.mul0.fast_active`, `tb.sys1.cpu.mul0.busy`, `tb.sys1.cpu.mul0.fast_product_r` y `tb.sys1.cpu.mul0.seq_core.acc`. Durante los casos rápidos (tests 1, 4, 5 y 6) `fast_active` se mantiene a 1 y `mbusy` no llega a activarse, confirmando la terminación inmediata.
-- **Señales del procesador**: `tb.sys1.cpu.dbusy` permanece 0 mientras `mul_validation` se ejecuta; `tb.sys1.cpu.regs[x10..x15]` muestran los operandos cargados por la macro (útil para comprobar la secuencia).
-- **Memoria de datos**: en `tb.vcd` seguir `tb.sys1.cpu.ram0.mem` (o la señal equivalente) y localizar la dirección etiquetada como `mul_status`. El valor debe ser 0. Justo después está la tabla `mul_report`; cada bloque de 6 palabras debe coincidir con la tabla anterior y la quinta palabra (delta) tiene que permanecer a 0.
-- **Consola**: el flujo normal termina en el bucle infinito `loop:` sin generar excepciones. Si algún delta fuese distinto de cero, `mul_status` almacenaría el número de casos fallidos, lo que permitiría identificar rápidamente problemas en la integración.
+### 6.4 Comandos y flujo
+1. **Firmware**: `cd Firmware && make` recompila `code.bin` y renueva `mul_test_vector`/`mul_report`.
+2. **Simulación completa**: `make sim` genera `tb.out`, `tb.vcd` y lanza `gtkwave` usando el fichero `tb.gtkw` actualizado (ya incluye todas las señales útiles).
+3. **Inspección manual**: si se desea reabrir después, basta con `gtkwave tb.vcd tb.gtkw`.
 
 Con todo ello queda cubierta la “Segunda Parte: Integración en laRVa y simulación del programa” exigida en el enunciado.
 
+## 7. Tutorial GTKWave: señales a observar y expectativas
+
+### 7.1 Señales internas del multiplicador
+1. **`tb.sys1.cpu.mul0.fast_active`**: vale `1` cuando el bypass entrega el resultado en un único ciclo. En esos instantes `mul0.busy` y `mbusy` permanecen en `0`.
+2. **`tb.sys1.cpu.mul0.busy`**: indica que el núcleo secuencial sigue desplazando y sumando. Dura 33 ciclos en los casos generales; no llega a activarse en las pruebas rápidas (0, ±1, potencias de dos).
+3. **`tb.sys1.cpu.mbusy`**: réplica del punto anterior pero expuesto al resto del procesador. Permite comprobar que el pipeline se desocupa inmediatamente cuando `fast_active=1`.
+4. **`tb.sys1.cpu.mul0.fast_product_r[63:0]`**: registro que almacena el producto del bypass. En GTKWave se puede observar cómo `out` toma `fast_product_r[31:0]` para `MUL` y `fast_product_r[63:32]` para `MULH/MULHSU/MULHU`.
+5. **`tb.sys1.cpu.mul0.seq_core.acc[63:0]`**: acumulador del multiplicador secuencial. Solo cambia en las pruebas que necesitan el algoritmo bit a bit; debe converger al valor esperado tras 33 ciclos.
+6. **`tb.sys1.cpu.mul0.seq_core.sha[31:0]`**: registro desplazador del multiplicador. Se desplaza hacia la derecha hasta quedar a cero; ese instante coincide con la bajada de `busy`.
+7. **`tb.sys1.cpu.mul0.seq_core.shb[63:0]`**: desplazador del multiplicando extendido. Permite ver cómo se inyectan ceros o signos en cada ciclo cuando el bypass no actúa.
+
+El fichero `tb.gtkw` abre automáticamente todos estos nodos dentro del árbol `tb.sys1.cpu.mul0`.
+
+### 7.2 Registros y memoria de la CPU
+1. **Registros X5..X7 (`tb.sys1.cpu.regs[5..7][31:0]`)**: contienen los operandos y el resultado provisional (`t0`, `t1`, `t2`). Facilitan relacionar cada ciclo con el caso correspondiente.
+2. **Registros X10..X12 (`tb.sys1.cpu.regs[10..12][31:0]`)**: la rutina usa `a0/a1/a2` para cargar el esperado, acumular `delta` y codificar el metadato. Tras cada prueba deben coincidir con los valores volcados en memoria.
+3. **`tb.sys1.ram0.ram_array[0x704][31:0]`**: palabra donde se guarda `mul_status`. Cualquier valor distinto de cero implica que al menos un test produjo un `delta` no permitido.
+4. **`tb.sys1.ram0.ram_array[0x705..]`**: bloque ocupado por `mul_report`. En `tb.gtkw` se muestran las primeras diez palabras (dos pruebas completas) y se puede añadir más nodos para inspeccionar el resto.
+
+### 7.3 Cómo leer `mul_report`
+- Cada registro ocupa cinco palabras consecutivas: `A`, `B`, `resultado HW`, `delta` y `metadatos`. El esperado se puede reconstruir con `esperado = resultado - delta`.
+- El campo de metadatos codifica el número de prueba (bits [31:16]), los flags (bits [15:8]) y el identificador de instrucción (bits [7:0]). Por ejemplo, `0x00012A01` indica “prueba 0x12A, sin flags, MULH”.
+- Las pruebas 42 y 44 tienen `FLAG_KNOWN_ISSUE` activado porque el hardware original devuelve resultados distintos a los teóricos al multiplicar `-1` por `-2^31`. Estos casos producen un `delta` distinto de cero pero no incrementan `mul_status`.
+- Para ver otras entradas basta con añadir señales adicionales en GTKWave siguiendo el patrón `tb.sys1.ram0.ram_array[0x705 + offset]`.
+
+### 7.4 Señal `busy` en el diseño original
+- En la versión de referencia, `busy` era la única indicación de que el multiplicador estaba ocupando el bus interno. Se activaba cuando `load=1` y se mantenía alto mientras el registro desplazador `sha` tenía bits pendientes (33 ciclos en total). Con la integración actual, este comportamiento se preserva cuando no entra en juego el bypass; adicionalmente, cuando `fast_active=1`, la combinación `busy=0`/`mbusy=0` confirma que la operación se resolvió en un ciclo sin interferir con el pipeline.
+
+### 7.5 Instrucciones de multiplicación RV32
+1. **`MUL rd, rs1, rs2`**: calcula el producto de 32 bits y devuelve la mitad baja (`[31:0]`). Se usa tanto para enteros con signo como sin signo (los operandos se consideran en complemento a dos).
+2. **`MULH rd, rs1, rs2`**: multiplica dos enteros con signo y entrega la mitad alta del resultado (`[63:32]`). Sirve para cálculos donde interesa el overflow o para construir productos de 64 bits.
+3. **`MULHSU rd, rs1, rs2`**: el primer operando (`rs1`) es con signo, el segundo (`rs2`) sin signo. También devuelve la mitad alta.
+4. **`MULHU rd, rs1, rs2`**: ambos operandos se consideran sin signo; devuelve la mitad alta del producto.
+
+Para cada instrucción, los resultados esperados están recogidos en la tabla de la sección 6.3. Tras la simulación `mul_status` debe permanecer a cero para confirmar que todas las entradas de `mul_report` tienen `delta=0` (salvo los dos casos documentados).
 # NOTAS Mario
 ### Para ejecutar con el multiplicador original de larva 2
 iverilog -D ENABLE_MULDIV -o mult_tb.out multiplier_4bit_tb.v laRVa.v

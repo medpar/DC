@@ -2,9 +2,9 @@
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
 [*] Wed Nov 05 19:25:01 2025
 [*]
-[dumpfile] "C:\TP1_RV32E\laRVa2_DC\tb.vcd"
-[dumpfile_mtime] "Wed Nov 05 19:23:13 2025"
-[dumpfile_size] 2896198
+[dumpfile] "tb.vcd"
+[dumpfile_mtime] "Wed Nov 19 23:35:45 2025"
+[dumpfile_size] 2334834
 [savefile] "C:\TP1_RV32E\laRVa2_DC\tb.gtkw"
 [timestart] 0
 [size] 1641 747
@@ -13,6 +13,8 @@
 [treeopen] tb.
 [treeopen] tb.sys1.
 [treeopen] tb.sys1.cpu.
+[treeopen] tb.sys1.cpu.mul0.
+[treeopen] tb.sys1.ram0.
 [sst_width] 211
 [signals_width] 267
 [sst_expanded] 1
@@ -47,5 +49,31 @@ tb.sys1.cpu.regsQ1[31:0]
 tb.sys1.cpu.regsQ2[31:0]
 @420
 tb.sys1.cpu.regsD[31:0]
+@28
+tb.sys1.cpu.mul0.fast_active
+tb.sys1.cpu.mul0.busy
+tb.sys1.cpu.mbusy
+@22
+tb.sys1.cpu.mul0.fast_product_r[63:0]
+tb.sys1.cpu.mul0.seq_core.acc[63:0]
+tb.sys1.cpu.mul0.seq_core.sha[31:0]
+tb.sys1.cpu.mul0.seq_core.shb[63:0]
+tb.sys1.cpu.regs[5][31:0]
+tb.sys1.cpu.regs[6][31:0]
+tb.sys1.cpu.regs[7][31:0]
+tb.sys1.cpu.regs[10][31:0]
+tb.sys1.cpu.regs[11][31:0]
+tb.sys1.cpu.regs[12][31:0]
+tb.sys1.ram0.ram_array[0x704][31:0]
+tb.sys1.ram0.ram_array[0x705][31:0]
+tb.sys1.ram0.ram_array[0x706][31:0]
+tb.sys1.ram0.ram_array[0x707][31:0]
+tb.sys1.ram0.ram_array[0x708][31:0]
+tb.sys1.ram0.ram_array[0x709][31:0]
+tb.sys1.ram0.ram_array[0x70A][31:0]
+tb.sys1.ram0.ram_array[0x70B][31:0]
+tb.sys1.ram0.ram_array[0x70C][31:0]
+tb.sys1.ram0.ram_array[0x70D][31:0]
+tb.sys1.ram0.ram_array[0x70E][31:0]
 [pattern_trace] 1
 [pattern_trace] 0
