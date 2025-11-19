@@ -1,5 +1,7 @@
 //------------------------------------------------------------------------------
-// Multiplicador con bypass para laRVa (Primera parte del proyecto)
+// PRIMERA PARTE: Diseño del componente
+// Grupo 1.2: Mario Medrano Paredes y Miguel Barrigón Gómez
+// Multiplicador con bypass para laRVa
 // Mantiene la interfaz original para ser intercambiable con el núcleo existente.
 //------------------------------------------------------------------------------
 

@@ -52,7 +52,59 @@ Compila todo el SoC y abre `tb.vcd` en GTKWave. Las instrucciones MUL/MULH del p
 - Camino secuencial: `busy` sigue siendo la referencia para el core. Si `busy` permanece alto menos de 33 ciclos es indicador de que la lógica de `iload` ha reconocido operandos repetidos (caché). Los valores de `sha` y `acc` no deberían verse alterados en GTKWave cuando el bypass actúa, ya que el pulso `load & ~fast_valid_c` inhibe al `multiplier_seq`.
 - Errores en las pruebas 42 y 44: se deben a las limitaciones conocidas del multiplicador original cuando ambos operandos son el mínimo entero con signo. No afectan al nuevo hardware y son aceptados tal como indica la documentación de LaRVa2.
 
-Con esta información se cubre la “Primera Parte: Diseño del componente” solicitada en el enunciado y queda listo para su integración en etapas posteriores.
+Con esta información se cubre la "Primera Parte: Diseño del componente" solicitada en el enunciado y queda listo para su integración en etapas posteriores.
+
+## 6. Segunda parte: Integración y validación en laRVa
+
+### 6.1 Sustitución dentro del core
+- En `laRVa.v` la sección `ENABLE_MULDIV` incluye ahora el fichero `mult_signo.v`, encerrado entre los separadores `// ----- CAMBIOS MARIO MEDRANO ...`. La instancia `mul0` no se modifica, por lo que el resto del pipeline sigue viendo los puertos originales.
+- Al compilar el SoC, el nuevo módulo queda integrado automáticamente; ya no existe la definición antigua del multiplicador dentro de `laRVa.v`.
+
+### 6.2 Programa de validación en `start.s`
+- El arranque (`start`) llama a la rutina `mul_validation` antes de ejecutar `main`. Esta rutina está acotada por los comentarios `# ----- CAMBIOS MARIO MEDRANO ...`.
+- Se definen macros y constantes para generar ocho pruebas: dos por cada instrucción (`MUL`, `MULH`, `MULHSU`, `MULHU`). Cada caso almacena seis palabras consecutivas en la tabla `mul_report`:
+  1. Operando A.
+  2. Operando B.
+  3. Resultado de la instrucción.
+  4. Valor esperado (precalculado).
+  5. Delta = resultado − esperado (debe ser 0).
+  6. Identificador de instrucción (`0=MUL`, `1=MULH`, `2=MULHSU`, `3=MULHU`).
+- Los operandos cubren tanto los casos “rápidos” (0, ±1, potencias de dos) como los generales:
+
+| Índice | Instr. | A | B | Esperado (hex) |
+| --- | --- | --- | --- | --- |
+| 0 | MUL | 0x00000005 | 0xFFFFFFF9 (-7) | 0xFFFFFFDD |
+| 1 | MUL | 0x00000400 | 0x00000021 | 0x00008400 |
+| 2 | MULH | 0x12345678 | 0x0FEDCBA9 | 0x0121FA00 |
+| 3 | MULH | 0xFFF1E240 | 0x00ABCDEF | 0xFFFFF686 |
+| 4 | MULHSU | 0xFFFFFFFB | 0x80000000 | 0xFFFFFFFD |
+| 5 | MULHSU | 0x80000000 | 0x00000002 | 0xFFFFFFFF |
+| 6 | MULHU | 0xFEDCBA98 | 0x01020304 | 0x0100DD74 |
+| 7 | MULHU | 0x12345678 | 0x9ABCDEF0 | 0x0B00EA4E |
+
+- El contador global `mul_status` almacena el número de fallos detectados para facilitar la comprobación rápida durante la simulación (0 = todo correcto).
+
+### 6.3 Comandos y flujo
+1. Regenerar el firmware con las nuevas pruebas:
+   ```
+   (cd Firmware && make)
+   ```
+2. Simular el SoC completo:
+   ```
+   make sim
+   ```
+3. Abrir la traza para inspección:
+   ```
+   gtkwave tb.vcd tb.gtkw
+   ```
+
+### 6.4 Interpretación con GTKWave
+- **Señales del multiplicador**: añadir `tb.sys1.cpu.mul0.fast_active`, `tb.sys1.cpu.mul0.busy`, `tb.sys1.cpu.mul0.fast_product_r` y `tb.sys1.cpu.mul0.seq_core.acc`. Durante los casos rápidos (tests 1, 4, 5 y 6) `fast_active` se mantiene a 1 y `mbusy` no llega a activarse, confirmando la terminación inmediata.
+- **Señales del procesador**: `tb.sys1.cpu.dbusy` permanece 0 mientras `mul_validation` se ejecuta; `tb.sys1.cpu.regs[x10..x15]` muestran los operandos cargados por la macro (útil para comprobar la secuencia).
+- **Memoria de datos**: en `tb.vcd` seguir `tb.sys1.cpu.ram0.mem` (o la señal equivalente) y localizar la dirección etiquetada como `mul_status`. El valor debe ser 0. Justo después está la tabla `mul_report`; cada bloque de 6 palabras debe coincidir con la tabla anterior y la quinta palabra (delta) tiene que permanecer a 0.
+- **Consola**: el flujo normal termina en el bucle infinito `loop:` sin generar excepciones. Si algún delta fuese distinto de cero, `mul_status` almacenaría el número de casos fallidos, lo que permitiría identificar rápidamente problemas en la integración.
+
+Con todo ello queda cubierta la “Segunda Parte: Integración en laRVa y simulación del programa” exigida en el enunciado.
 
 # NOTAS Mario
 ### Para ejecutar con el multiplicador original de larva 2

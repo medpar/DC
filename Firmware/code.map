@@ -9,92 +9,94 @@ RAM              0x0000000000001c00 0x0000000000000400 xrw
 Linker script and memory map
 
 
-.text           0x0000000000000000      0xb34
+.text           0x0000000000000000      0xda4
                 0x0000000000000000                . = ALIGN (0x4)
  *(.boot)
- .boot          0x0000000000000000        0x4 C:\Users\rutpi\AppData\Local\Temp\cc4yfYQO.o
+ .boot          0x0000000000000000        0x4 C:\Users\MARIO~1.DES\AppData\Local\Temp\cc8wmoq3.o
  *(.text)
- .text          0x0000000000000004       0x68 C:\Users\rutpi\AppData\Local\Temp\cc4yfYQO.o
-                0x0000000000000060                delay_loop
- .text          0x000000000000006c      0x740 C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
-                0x000000000000006c                irq2_handler
-                0x00000000000000d0                irq3_handler
-                0x0000000000000120                _putch
-                0x000000000000058c                _puts
-                0x00000000000005c0                _printf
-                0x00000000000005fc                _sprintf
-                0x0000000000000634                _getch
-                0x0000000000000678                haschar
-                0x0000000000000694                getMEPC
-                0x00000000000006a0                irq1_handler
-                0x0000000000000710                spixfer
-                0x0000000000000730                getw
-                0x0000000000000784                _memcpy
+ .text          0x0000000000000004      0x2d4 C:\Users\MARIO~1.DES\AppData\Local\Temp\cc8wmoq3.o
+                0x00000000000002cc                delay_loop
+ .text          0x00000000000002d8      0x740 C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
+                0x00000000000002d8                irq2_handler
+                0x000000000000033c                irq3_handler
+                0x000000000000038c                _putch
+                0x00000000000007f8                _puts
+                0x000000000000082c                _printf
+                0x0000000000000868                _sprintf
+                0x00000000000008a0                _getch
+                0x00000000000008e4                haschar
+                0x0000000000000900                getMEPC
+                0x000000000000090c                irq1_handler
+                0x000000000000097c                spixfer
+                0x000000000000099c                getw
+                0x00000000000009f0                _memcpy
  *(.text*)
- .text.startup  0x00000000000007ac      0x18c C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
-                0x00000000000007ac                main
+ .text.startup  0x0000000000000a18      0x190 C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
+                0x0000000000000a18                main
  *(.rodata)
  *(.rodata*)
  .rodata.str1.4
-                0x0000000000000938      0x1fc C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
+                0x0000000000000ba8      0x1fc C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
  *(.srodata)
  *(.srodata*)
-                0x0000000000000b34                _etext = .
-                0x0000000000000b34                _sidata = _etext
+                0x0000000000000da4                _etext = .
+                0x0000000000000da4                _sidata = _etext
 
-.rela.dyn       0x0000000000000b34        0x0
- .rela.text     0x0000000000000b34        0x0 C:\Users\rutpi\AppData\Local\Temp\cc4yfYQO.o
+.rela.dyn       0x0000000000000da4        0x0
+ .rela.text     0x0000000000000da4        0x0 C:\Users\MARIO~1.DES\AppData\Local\Temp\cc8wmoq3.o
 
-.data           0x0000000000001c00        0x4 load address 0x0000000000000b34
+.data           0x0000000000001c00        0x4 load address 0x0000000000000da4
                 0x0000000000001c00                . = ALIGN (0x4)
-                0x0000000000000b34                _sdata_values = LOADADDR (.data)
+                0x0000000000000da4                _sdata_values = LOADADDR (.data)
                 0x0000000000001c00                _sdata = .
                 0x0000000000001c00                _ram_start = .
                 0x0000000000001c00                . = ALIGN (0x4)
  *(.data)
- .data          0x0000000000001c00        0x0 C:\Users\rutpi\AppData\Local\Temp\cc4yfYQO.o
- .data          0x0000000000001c00        0x0 C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
+ .data          0x0000000000001c00        0x0 C:\Users\MARIO~1.DES\AppData\Local\Temp\cc8wmoq3.o
+ .data          0x0000000000001c00        0x0 C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
  *(.data*)
  *(.sdata)
- .sdata         0x0000000000001c00        0x1 C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
+ .sdata         0x0000000000001c00        0x1 C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
  *(.sdata*)
                 0x0000000000001c04                . = ALIGN (0x4)
  *fill*         0x0000000000001c01        0x3 
                 0x0000000000001c04                _edata = .
 
-.bss            0x0000000000001c04       0x24 load address 0x0000000000000b38
-                0x0000000000001c04                . = ALIGN (0x4)
-                0x0000000000001c04                _sbss = .
+.bss            0x0000000000001c10       0xe8 load address 0x0000000000000da8
+                0x0000000000001c10                . = ALIGN (0x4)
+                0x0000000000001c10                _sbss = .
  *(.bss)
- .bss           0x0000000000001c04        0x0 C:\Users\rutpi\AppData\Local\Temp\cc4yfYQO.o
- .bss           0x0000000000001c04       0x20 C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
-                0x0000000000001c04                udat
+ .bss           0x0000000000001c10       0xc4 C:\Users\MARIO~1.DES\AppData\Local\Temp\cc8wmoq3.o
+                0x0000000000001c10                mul_status
+                0x0000000000001c14                mul_report
+ .bss           0x0000000000001cd4       0x20 C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
+                0x0000000000001cd4                udat
  *(.bss*)
  *(.sbss)
- .sbss          0x0000000000001c24        0x2 C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
-                0x0000000000001c24                wrix
-                0x0000000000001c25                rdix
+ .sbss          0x0000000000001cf4        0x2 C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
+                0x0000000000001cf4                wrix
+                0x0000000000001cf5                rdix
  *(.sbss*)
  *(COMMON)
-                0x0000000000001c28                . = ALIGN (0x4)
- *fill*         0x0000000000001c26        0x2 
-                0x0000000000001c28                _ebss = .
+                0x0000000000001cf8                . = ALIGN (0x4)
+ *fill*         0x0000000000001cf6        0x2 
+                0x0000000000001cf8                _ebss = .
 
-.heap           0x0000000000001c28        0x0 load address 0x0000000000000b38
-                0x0000000000001c28                . = ALIGN (0x4)
-                0x0000000000001c28                _heap_start = .
-LOAD C:\Users\rutpi\AppData\Local\Temp\cc4yfYQO.o
-LOAD C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
-LOAD c:/tp1_rv32e/tools/xpack-risc_v/bin/../lib/gcc/riscv-none-elf/12.2.0/rv32em/ilp32e\libgcc.a
+.heap           0x0000000000001cf8        0x0 load address 0x0000000000000da8
+                0x0000000000001cf8                . = ALIGN (0x4)
+                0x0000000000001cf8                _heap_start = .
+LOAD C:\Users\MARIO~1.DES\AppData\Local\Temp\cc8wmoq3.o
+LOAD C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
+LOAD c:/users/mario.desktop-viqgv0e/documents/dc-proyecto/codigo/tools/xpack-risc_v/bin/../lib/gcc/riscv-none-elf/12.2.0/rv32em/ilp32e\libgcc.a
 OUTPUT(code.elf elf32-littleriscv)
 
 .riscv.attributes
                 0x0000000000000000       0x25
  .riscv.attributes
-                0x0000000000000000       0x1f C:\Users\rutpi\AppData\Local\Temp\cc4yfYQO.o
+                0x0000000000000000       0x1f C:\Users\MARIO~1.DES\AppData\Local\Temp\cc8wmoq3.o
  .riscv.attributes
-                0x000000000000001f       0x25 C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
+                0x000000000000001f       0x25 C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
 
 .comment        0x0000000000000000       0x33
- .comment       0x0000000000000000       0x33 C:\Users\rutpi\AppData\Local\Temp\ccuERYji.o
+ .comment       0x0000000000000000       0x33 C:\Users\MARIO~1.DES\AppData\Local\Temp\ccup1jDc.o
                                          0x34 (size before relaxing)
