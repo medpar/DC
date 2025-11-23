@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "mult_signo.v"
+//`include "mult_signo.v"
 module multiplier_4bit_tb;
 
     // Señales del DUT (Device Under Test)
@@ -101,11 +101,13 @@ module multiplier_4bit_tb;
             wait (!busy);
 			#2;	// aparece el resultado más tarde
 
+            // ---- AÑadido por Mario Medrano: Ver resultados en decimal con signo ------------------------
             // Capturar resultado de palabra baja
             if (!obtener_high) begin
                 resultado_capturado = out;
-                $display("Resultado (low): 0x%08h", out);
-                $display("Esperado  (low): 0x%08h", resultado_esperado[31:0]);
+                $display("Resultado (low): 0x%08h (%d)", out, $signed(out));
+                $display("Esperado  (low): 0x%08h (%d)", resultado_esperado[31:0], $signed(resultado_esperado[31:0]));
+           
                 
                 if (out !== resultado_esperado[31:0]) begin
                     $display("ERROR: Resultado incorrecto en palabra baja!");
@@ -121,8 +123,8 @@ module multiplier_4bit_tb;
 
 //               while (busy);
                 resultado_capturado = out;             
-                $display("Resultado (high): 0x%08h", out);
-                $display("Esperado  (high): 0x%08h", resultado_esperado[63:32]);
+                $display("Resultado (high): 0x%08h (%d)", out, $signed(out));
+                $display("Esperado  (high): 0x%08h (%d)", resultado_esperado[63:32], $signed(resultado_esperado[63:32]));
                 
                 if (out !== resultado_esperado[63:32]) begin
                     $display("ERROR: Resultado incorrecto en palabra alta!");
@@ -313,11 +315,11 @@ module multiplier_4bit_tb;
         $finish;
     end
     
-/*    // Monitor para debugging
-    initial begin
-        $monitor("Tiempo=%0t, Estado: reset=%b, load=%b, busy=%b, ciclo_actual=%d", 
-                 $time, reset, load, busy, DUT.ciclo_count);
-    end
-*/
+    // Monitor para debugging
+    // initial begin
+    //     $monitor("Tiempo=%0t, Estado: reset=%b, load=%b, busy=%b, ciclo_actual=%d", 
+    //              $time, reset, load, busy, DUT.clk);
+    // end
+
 
 endmodule

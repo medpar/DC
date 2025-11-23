@@ -1,0 +1,24 @@
+%% Diagrama ASM (top-down) del multiplicador con bypass descrito en mult_signo.v
+%% Combina deteccion rapida de casos triviales con el nucleo secuencial original.
+flowchart TD
+    Idle([Idle / busy=0<br/>espera load]) -->|load| FastCheck{{Evalua casos rapidos<br/>0, +/-1, potencia2?}}
+
+    FastCheck -->|si| FastBypass([Bypass inmediato<br/>fast_product_r <= caso detectado<br/>fast_active=1, busy=0])
+    FastBypass --> FastOut([Resultado listo en 1 ciclo<br/>out = hm ? high : low])
+    FastOut --> Idle
+
+    FastCheck -->|no| SeqLoad([Carga secuencial (iload)<br/>latched a,b,ua,ub<br/>fast_valid_c=0])
+    SeqLoad --> Prep([Ajuste signo sma<br/>ma, mb = magnitudes positivas<br/>sha <= ma, shb <= ext(mb), acc <= 0])
+    Prep --> Loop{{sha != 0 ?}}
+
+    Loop -->|sha[0]=1| Add([acc <= acc + shb])
+    Loop -->|sha[0]=0| Skip([Sin suma])
+    Add --> Shift([Desplaza: sha >> 1<br/>shb << 1])
+    Skip --> Shift
+    Shift --> Loop
+
+    Loop -->|sha == 0| Done([Termina iteracion<br/>busy=0, acc estable<br/>out = hm ? acc[63:32] : acc[31:0]])
+    Done --> Reuse{{Nuevo load iguales op.?}}
+    Reuse -->|si| Hold([Reutiliza acc/fast_product_r<br/>sin recarga ni busy])
+    Reuse -->|no| Idle
+    Hold --> Idle

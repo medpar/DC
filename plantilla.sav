@@ -1,0 +1,25 @@
+[timestart] 0
+[size] 1920 1017
+[pos] -87 -87
+*-16.355265 71300 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] multiplier_4bit_tb.
+@420
+multiplier_4bit_tb.clk
+multiplier_4bit_tb.reset
+multiplier_4bit_tb.busy
+multiplier_4bit_tb.hm
+multiplier_4bit_tb.load
+multiplier_4bit_tb.ua
+multiplier_4bit_tb.ub
+multiplier_4bit_tb.DUT.sma
+multiplier_4bit_tb.DUT.iload
+multiplier_4bit_tb.DUT.acc[63:0]
+multiplier_4bit_tb.pruebas[31:0]
+multiplier_4bit_tb.a[31:0]
+multiplier_4bit_tb.b[31:0]
+multiplier_4bit_tb.out[31:0]
+multiplier_4bit_tb.resultado_capturado[63:0]
+multiplier_4bit_tb.resultado_esperado[63:0]
+multiplier_4bit_tb.errores[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

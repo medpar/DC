@@ -1,0 +1,326 @@
+>> iverilog -o mult_tb.out multiplier_4bit_tb.v
+>> vvp mult_tb.out
+>> gtkwave .\multiplier_4bit_tb.vcd
+VCD info: dumpfile multiplier_4bit_tb.vcd opened for output.
+
+========================================
+  INICIO DE PRUEBAS DEL MULTIPLICADOR
+========================================
+
+=== Prueba 1: Num bajos ++ (5 x 7) low ===
+A =          5 (0x00000005), B =          7 (0x00000007)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0x00000023 (         35)
+Esperado  (low): 0x00000023 (         35)
+CORRECTO: Palabra baja
+
+=== Prueba 2: Num bajos ++ (5 x 7) high ===
+A =          5 (0x00000005), B =          7 (0x00000007)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 3: Num bajos +- (5 x -7) low ===
+A =          5 (0x00000005), B = 4294967289 (0xfffffff9)
+UA = 1, UB = 0, HM = 0
+Resultado (low): 0xffffffdd (        -35)
+Esperado  (low): 0xffffffdd (        -35)
+CORRECTO: Palabra baja
+
+=== Prueba 4: Num bajos +- (5 x -7) high ===
+A =          5 (0x00000005), B = 4294967289 (0xfffffff9)
+UA = 1, UB = 0, HM = 1
+Resultado (high): 0xffffffff (         -1)
+Esperado  (high): 0xffffffff (         -1)
+CORRECTO: Palabra alta
+
+=== Prueba 5: Num bajos -+ (-5 x 7) low ===
+A = 4294967291 (0xfffffffb), B =          7 (0x00000007)
+UA = 0, UB = 0, HM = 0
+Resultado (low): 0xffffffdd (        -35)
+Esperado  (low): 0xffffffdd (        -35)
+CORRECTO: Palabra baja
+
+=== Prueba 6: Num bajos -+ (-5 x 7) high ===
+A = 4294967291 (0xfffffffb), B =          7 (0x00000007)
+UA = 0, UB = 0, HM = 1
+Resultado (high): 0xffffffff (         -1)
+Esperado  (high): 0xffffffff (         -1)
+CORRECTO: Palabra alta
+
+=== Prueba 7: Num bajos -- (-5 x -7) low ===
+A = 4294967291 (0xfffffffb), B = 4294967289 (0xfffffff9)
+UA = 0, UB = 0, HM = 0
+Resultado (low): 0x00000023 (         35)
+Esperado  (low): 0x00000023 (         35)
+CORRECTO: Palabra baja
+
+=== Prueba 8: Num bajos -- (-5 x -7) high ===
+A = 4294967291 (0xfffffffb), B = 4294967289 (0xfffffff9)
+UA = 0, UB = 0, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 9: Multando = 0 low ===
+A =      12345 (0x00003039), B =          0 (0x00000000)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0x00000000 (          0)
+Esperado  (low): 0x00000000 (          0)
+CORRECTO: Palabra baja
+
+=== Prueba 10: Multando = 0 high ===
+A =      12345 (0x00003039), B =          0 (0x00000000)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 11: Mulor = 0 low ===
+A =          0 (0x00000000), B =      12345 (0x00003039)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0x00000000 (          0)
+Esperado  (low): 0x00000000 (          0)
+CORRECTO: Palabra baja
+
+=== Prueba 12: Mulor = 0 high ===
+A =          0 (0x00000000), B =      12345 (0x00003039)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 13: Multiplicacion por 1 low ===
+A =      12345 (0x00003039), B =          1 (0x00000001)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0x00003039 (      12345)
+Esperado  (low): 0x00003039 (      12345)
+CORRECTO: Palabra baja
+
+=== Prueba 14: Multiplicacion por 1 high ===
+A =      12345 (0x00003039), B =          1 (0x00000001)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 15: Multiplicacion por -1 low ===
+A =      12345 (0x00003039), B = 4294967295 (0xffffffff)
+UA = 1, UB = 0, HM = 0
+Resultado (low): 0xffffcfc7 (     -12345)
+Esperado  (low): 0xffffcfc7 (     -12345)
+CORRECTO: Palabra baja
+
+=== Prueba 16: Multiplicacion por -1 high ===
+A =      12345 (0x00003039), B = 4294967295 (0xffffffff)
+UA = 1, UB = 0, HM = 1
+Resultado (high): 0xffffffff (         -1)
+Esperado  (high): 0xffffffff (         -1)
+CORRECTO: Palabra alta
+
+=====================================================================
+
+=== Prueba 17: s unsigned (2^32-1 x 2^32-1) low ===
+A = 4294967295 (0xffffffff), B = 4294967295 (0xffffffff)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0x00000001 (          1)
+Esperado  (low): 0x00000001 (          1)
+CORRECTO: Palabra baja
+
+=== Prueba 18:  unsigned (2^32-1 x 2^32-1) high ===
+A = 4294967295 (0xffffffff), B = 4294967295 (0xffffffff)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0xfffffffe (         -2)
+Esperado  (high): 0xfffffffe (         -2)
+CORRECTO: Palabra alta
+
+=== Prueba 19: s signed + (2^31-1 x 2^31-1) low ===
+A = 2147483647 (0x7fffffff), B = 2147483647 (0x7fffffff)
+UA = 0, UB = 0, HM = 0
+Resultado (low): 0x00000001 (          1)
+Esperado  (low): 0x00000001 (          1)
+CORRECTO: Palabra baja
+
+=== Prueba 20:  signed + (2^31-1 x 2^31-1) high ===
+A = 2147483647 (0x7fffffff), B = 2147483647 (0x7fffffff)
+UA = 0, UB = 0, HM = 1
+Resultado (high): 0x3fffffff ( 1073741823)
+Esperado  (high): 0x3fffffff ( 1073741823)
+CORRECTO: Palabra alta
+
+=== Prueba 21: rande signo + x grande signo low ===
+A = 2147483647 (0x7fffffff), B = 2147483648 (0x80000000)
+UA = 0, UB = 0, HM = 0
+Resultado (low): 0x80000000 (-2147483648)
+Esperado  (low): 0x80000000 (-2147483648)
+CORRECTO: Palabra baja
+
+=== Prueba 22: ande signo + x grande signo high ===
+A = 2147483647 (0x7fffffff), B = 2147483648 (0x80000000)
+UA = 0, UB = 0, HM = 1
+Resultado (high): 0xc0000000 (-1073741824)
+Esperado  (high): 0xc0000000 (-1073741824)
+CORRECTO: Palabra alta
+
+=== Prueba 23: 36 (overflow a palabra alta) low ===
+A =      65536 (0x00010000), B =      65536 (0x00010000)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0x00000000 (          0)
+Esperado  (low): 0x00000000 (          0)
+CORRECTO: Palabra baja
+
+=== Prueba 24: 6 (overflow a palabra alta) high ===
+A =      65536 (0x00010000), B =      65536 (0x00010000)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x00000001 (          1)
+Esperado  (high): 0x00000001 (          1)
+CORRECTO: Palabra alta
+
+=== Prueba 25: gned (0x5555... x 0xAAAA...) low ===
+A = 1431655765 (0x55555555), B = 2863311530 (0xaaaaaaaa)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0x71c71c72 ( 1908874354)
+Esperado  (low): 0x71c71c72 ( 1908874354)
+CORRECTO: Palabra baja
+
+=== Prueba 26: ned (0x5555... x 0xAAAA...) high ===
+A = 1431655765 (0x55555555), B = 2863311530 (0xaaaaaaaa)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x38e38e38 (  954437176)
+Esperado  (high): 0x38e38e38 (  954437176)
+CORRECTO: Palabra alta
+
+=== Prueba 27: Numeros con nibbles cero low ===
+A =   16711935 (0x00ff00ff), B =  252645135 (0x0f0f0f0f)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0xfff0fff1 (    -983055)
+Esperado  (low): 0xfff0fff1 (    -983055)
+CORRECTO: Palabra baja
+
+=== Prueba 28: Numeros con nibbles cero high ===
+A =   16711935 (0x00ff00ff), B =  252645135 (0x0f0f0f0f)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x000f000e (     983054)
+Esperado  (high): 0x000f000e (     983054)
+CORRECTO: Palabra alta
+
+=== Prueba 29: Potencias de 2 (1024 x 2048)low ===
+A =       1024 (0x00000400), B =       2048 (0x00000800)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0x00200000 (    2097152)
+Esperado  (low): 0x00200000 (    2097152)
+CORRECTO: Palabra baja
+
+=== Prueba 30: Potencias de 2 (1024 x 2048)high ===
+A =       1024 (0x00000400), B =       2048 (0x00000800)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 31: Numeros primos grandes low ===
+A =      65537 (0x00010001), B =      65521 (0x0000fff1)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0xfff1fff1 (    -917519)
+Esperado  (low): 0xfff1fff1 (    -917519)
+CORRECTO: Palabra baja
+
+=== Prueba 32: Numeros primos grandes high ===
+A =      65537 (0x00010001), B =      65521 (0x0000fff1)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 33: Maximo sin signo x -1 low ===
+A = 4294967295 (0xffffffff), B = 4294967295 (0xffffffff)
+UA = 1, UB = 0, HM = 0
+Resultado (low): 0x00000001 (          1)
+Esperado  (low): 0x00000001 (          1)
+CORRECTO: Palabra baja
+
+=== Prueba 34: Maximo sin signo x -1 high ===
+A = 4294967295 (0xffffffff), B = 4294967295 (0xffffffff)
+UA = 1, UB = 0, HM = 1
+Resultado (high): 0xffffffff (         -1)
+Esperado  (high): 0xffffffff (         -1)
+CORRECTO: Palabra alta
+
+=== Prueba 35: Numeros aleatorios grandes low ===
+A =  123456789 (0x075bcd15), B =  987654321 (0x3ade68b1)
+UA = 1, UB = 1, HM = 0
+Resultado (low): 0xfbff5385 (  -67153019)
+Esperado  (low): 0xfbff5385 (  -67153019)
+CORRECTO: Palabra baja
+
+=== Prueba 36: Numeros aleatorios grandes high ===
+A =  123456789 (0x075bcd15), B =  987654321 (0x3ade68b1)
+UA = 1, UB = 1, HM = 1
+Resultado (high): 0x01b13114 (   28389652)
+Esperado  (high): 0x01b13114 (   28389652)
+CORRECTO: Palabra alta
+
+=== Prueba 37: (-1) x (-1) con signo, low ===
+A = 4294967295 (0xffffffff), B = 4294967295 (0xffffffff)
+UA = 0, UB = 0, HM = 0
+Resultado (low): 0x00000001 (          1)
+Esperado  (low): 0x00000001 (          1)
+CORRECTO: Palabra baja
+
+=== Prueba 38: (-1) x (-1) con signo, high ===
+A = 4294967295 (0xffffffff), B = 4294967295 (0xffffffff)
+UA = 0, UB = 0, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 39: max signed - (-2^31-1 x -1) low ===
+A = 2147483648 (0x80000000), B = 4294967295 (0xffffffff)
+UA = 0, UB = 0, HM = 0
+Resultado (low): 0x80000000 (-2147483648)
+Esperado  (low): 0x80000000 (-2147483648)
+CORRECTO: Palabra baja
+
+=== Prueba 40: max signed - (-2^31-1 x -1) high ===
+A = 2147483648 (0x80000000), B = 4294967295 (0xffffffff)
+UA = 0, UB = 0, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 41: max signed - (-1 x -2^31-1) low ===
+A = 4294967295 (0xffffffff), B = 2147483648 (0x80000000)
+UA = 0, UB = 0, HM = 0
+Resultado (low): 0x80000000 (-2147483648)
+Esperado  (low): 0x80000000 (-2147483648)
+CORRECTO: Palabra baja
+
+=== Prueba 42: max signed - (-1 x -2^31-1) high ===
+A = 4294967295 (0xffffffff), B = 2147483648 (0x80000000)
+UA = 0, UB = 0, HM = 1
+Resultado (high): 0x00000000 (          0)
+Esperado  (high): 0x00000000 (          0)
+CORRECTO: Palabra alta
+
+=== Prueba 43: max signo - (-2^31 x -2^31) low ===
+A = 2147483648 (0x80000000), B = 2147483648 (0x80000000)
+UA = 0, UB = 0, HM = 0
+Resultado (low): 0x00000000 (          0)
+Esperado  (low): 0x00000000 (          0)
+CORRECTO: Palabra baja
+
+=== Prueba 44: max signo - (-2^31 x -2^31) high ===
+A = 2147483648 (0x80000000), B = 2147483648 (0x80000000)
+UA = 0, UB = 0, HM = 1
+Resultado (high): 0x40000000 ( 1073741824)
+Esperado  (high): 0x40000000 ( 1073741824)
+CORRECTO: Palabra alta
+
+========================================
+  RESUMEN DE PRUEBAS
+========================================
+Total de pruebas ejecutadas: 44
+Errores encontrados: 0
+┬íTODAS LAS PRUEBAS PASARON EXITOSAMENTE!
+========================================

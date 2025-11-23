@@ -163,7 +163,11 @@ Para cada instrucción, los resultados esperados están recogidos en la tabla de
 iverilog -D ENABLE_MULDIV -o mult_tb.out multiplier_4bit_tb.v laRVa.v
 vvp mult_tb.out
 
-
+```
+iverilog -D ENABLE_MULDIV -o mult_tb.out multiplier_4bit_tb.v larva2_backup.v
+vvp mult_tb.out
+gtkwave multiplier_4bit_tb.vcd
+```
 
 ### Para ejecutar con el multiplicador del grupo 1.2
 iverilog -o mult_tb.out multiplier_4bit_tb.v
