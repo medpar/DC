@@ -3,4 +3,4 @@
 *.7z
 *.tar
 *.gz
-
+*.DS_Store*
