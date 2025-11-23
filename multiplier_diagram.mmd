@@ -1,53 +1,116 @@
-```mermaid
-graph LR
-    clk((clk))
-    reset((reset))
-    a["A – rs2 (32 bits)"]
-    b["B – rs1 (32 bits)"]
-    ua["ua (1)"]
-    ub["ub (1)"]
-    hm["hm (1)"]
-    load["load (1)"]
+%% Diagrama del multiplicador con bypass (mult_signo.v)
+flowchart LR
+    %% Entradas externas
+    clk_in((clk))
+    rst_in((reset))
+    a_in[a[31:0]]
+    b_in[b[31:0]]
+    ua_in[ua]
+    ub_in[ub]
+    hm_in[hm]
+    load_in[load]
 
-    fastdet["Detector casos rápidos\n(0, ±1, potencias de 2)"]
-    fastReg["fast_product_r\n64 bits"]
-    muxFast{{"fast_active ?"}}
-    md["MD – shift register\n64 bits"]
-    mr["MR – shift register\n32 bits"]
-    adder["Adder"]
-    acc["ACC – acumulador\n64 bits"]
-    busy["busy / mbusy"]
-    out["out[31:0] / out[63:32]"]
+    %% Camino rapido combinacional
+    subgraph FAST["Camino rapido (deteccion de casos simples)"]
+        direction TB
+        aext["Extension a_ext[63:0]\n(ua ? zero : sign)"]
+        bext["Extension b_ext[63:0]\n(ub ? zero : sign)"]
+        absdet["Abs + detectores 0/neg1/pos1/pot2\nbit_index32 -> desplazamiento"]
+        fastcalc["fast_valid_c\nfast_product_c[63:0]"]
+    end
 
-    clk --> md
-    clk --> mr
-    clk --> acc
-    reset --> md
-    reset --> mr
-    reset --> acc
+    %% Registros de bypass
+    subgraph BYP["Bypass registrado"]
+        direction TB
+        load_fast["load_fast = load & fast_valid_c"]
+        fast_active["fast_active"]
+        fast_reg["fast_product_r[63:0]"]
+        fast_low["fast_low = product_r[31:0]"]
+        fast_high["fast_high = product_r[63:32]"]
+    end
 
-    a --> fastdet
-    b --> fastdet
-    ua --> fastdet
-    ub --> fastdet
+    %% Nucleo secuencial original
+    subgraph SEQ["multiplier_seq (nucleo secuencial)"]
+        direction TB
+        load_seq["load_seq = load & ~fast_valid_c"]
+        opregs["Regs oa/ob/oua/oub\n(operacion previa)"]
+        iload["iload = load_seq &\n(entradas cambian o hm pide signo)"]
+        signadj["sma=(~ua)&a[31]\nma/mb magnitud positiva"]
+        sha["SHA[31:0]\nshift-right (multiplicador)"]
+        shb["SHB[63:0]\nextension+shift-left (multiplicando)"]
+        adder{{"adder\nacc + shb si sha[0]"}}
+        acc["ACC[63:0]"]
+        seqout["seq_out[31:0] = hm ? acc[63:32] : acc[31:0]"]
+        seqbusy["seq_busy = iload | (|sha)"]
+    end
 
-    fastdet -->|caso rápido| fastReg
-    fastReg --> muxFast
+    %% Conexion camino rapido
+    a_in -->|a| aext
+    ua_in --> aext
+    b_in -->|b| bext
+    ub_in --> bext
+    aext --> absdet
+    bext --> absdet
+    absdet --> fastcalc
+    fastcalc -->|fast_valid_c| load_fast
+    load_in --> load_fast
+    load_fast --> fast_active
+    load_fast -->|fast_product_c| fast_reg
+    fast_reg --> fast_low
+    fast_reg --> fast_high
+    clk_in -.->|clk| fast_active
+    clk_in -.->|clk| fast_reg
+    rst_in -.->|reset| fast_active
+    rst_in -.->|reset| fast_reg
 
-    b --> md
-    md --> adder
+    %% Conexion nucleo secuencial
+    load_in --> load_seq
+    fastcalc -->|~fast_valid_c| load_seq
+    load_seq --> opregs
+    clk_in -.->|clk| opregs
+    rst_in -.->|reset| opregs
+    opregs --> iload
+    a_in -->|a| signadj
+    b_in -->|b| signadj
+    ua_in -->|ua| signadj
+    ub_in -->|ub| signadj
+    iload --> sha
+    iload --> shb
+    signadj -->|ma| sha
+    signadj -->|mb| shb
+    sha -->|sha[0]| adder
+    shb --> adder
     acc --> adder
     adder --> acc
+    iload --> acc
+    clk_in -.->|clk| sha
+    clk_in -.->|clk| shb
+    clk_in -.->|clk| acc
+    rst_in -.->|reset| sha
+    rst_in -.->|reset| shb
+    rst_in -.->|reset| acc
+    sha --> seqbusy
+    iload --> seqbusy
+    acc --> seqout
+    hm_in --> seqout
 
-    a --> mr
-    mr --> busy
-    busy --> muxFast
+    %% Multiplexores de salida
+    fast_mux{{"MUX hm\nfast_high vs fast_low"}}
+    out_mux{{"MUX fast_active\n(fast_mux vs seq_out)"}}
+    busy_mux{{"MUX fast_active\n(0 vs seq_busy)"}}
+    zero["0 (camino rapido listo)"]
+    out_out[(out[31:0])]
+    busy_out[(busy)]
 
-    load --> md
-    load --> mr
-    fastdet -. inhibe load secuencial .-> md
-    fastdet -. inhibe load secuencial .-> mr
+    fast_high --> fast_mux
+    fast_low --> fast_mux
+    hm_in --> fast_mux
+    fast_mux --> out_mux
+    seqout --> out_mux
+    fast_active -.->|sel| out_mux
+    out_mux --> out_out
 
-    hm --> muxFast
-    muxFast --> out
-```
+    seqbusy --> busy_mux
+    zero --> busy_mux
+    fast_active -.->|sel| busy_mux
+    busy_mux --> busy_out
