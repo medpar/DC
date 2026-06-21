@@ -172,12 +172,3 @@ make burn                   # program the board
 ## Tech stack
 
 `Verilog` · `RISC‑V (RV32IM / RV32EM)` · `FPGA` · `Lattice iCE40HX8K` · `Yosys / nextpnr / IceStorm` · `Icarus Verilog` · `GTKWave` · `RISC‑V GCC` · digital design (shift‑and‑add multiplier, combinational bypass, two's‑complement arithmetic).
-
----
-
-## Credits
-
-- **Multiplier design, verification and integration:** Mario Medrano Paredes & Miguel Barrigón Gómez.
-- **LaRVa RISC‑V core:** an existing open‑source RV32 soft core by Jesús Arias. This project modifies only the multiplication unit (`mult_signo.v`), the multiplier test bench, and the in‑CPU validation routine in `Firmware/start.s`; the rest of the core and SoC are the original work of its author.
-</content>
-</invoke>
