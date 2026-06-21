@@ -1,4 +1,4 @@
-# Fast‑Path (Bypass) Hardware Multiplier for a RISC‑V Core
+# Fast‑Path Hardware Multiplier for a RISC‑V Core
 
 A redesigned **32‑bit integer multiplier** for the **LaRVa** RISC‑V soft core (RV32 + the *M* extension), written in Verilog and verified on an FPGA flow.
 
